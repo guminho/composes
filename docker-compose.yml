@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  pg:
+    image: postgres:14
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: guest
+
+  pga:
+    image: dpage/pgadmin4
+    ports:
+      - 5433:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: g@g.gg
+      PGADMIN_DEFAULT_PASSWORD: guest
+
+  rd:
+    image: redis
+    ports:
+      - 6379:6379
+
+  rdi:
+    image: redislabs/redisinsight
+    ports:
+      - 8001:8001
+
+  mg:
+    image: mongo
+    ports:
+      - 27017:27017
+
+  rmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672  # ui
+
+  mio:
+    image: minio/minio
+    command: server /data --console-address :9001
+    ports:
+      - 9000:9000
+      - 9001:9001  # ui
+    environment:
+      - MINIO_ROOT_USER=guest
+      - MINIO_ROOT_PASSWORD=guest123
