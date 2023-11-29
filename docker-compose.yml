@@ -1,4 +1,11 @@
 version: '3.8'
+
+x-kong-env: &kong-env
+  KONG_PG_DATABASE: postgres
+  KONG_PG_HOST: pg
+  KONG_PG_USER: postgres
+  KONG_PG_PASSWORD: guest
+
 services:
   pg:
     image: postgres:14
@@ -43,8 +50,8 @@ services:
       - 9000:9000
       - 9001:9001 # ui
     environment:
-      - MINIO_ROOT_USER=guest
-      - MINIO_ROOT_PASSWORD=guest123
+      MINIO_ROOT_USER: guest
+      MINIO_ROOT_PASSWORD: guest123
 
   jg:
     image: jaegertracing/all-in-one
@@ -53,3 +60,23 @@ services:
       - 6831:6831/udp # agent jaeger thrift
       - 14250:14250 # collector jaeger grpc
       - 4317:4317 # collector otlp grpc
+
+  kg-migrate:
+    image: kong
+    depends_on: [ pg ]
+    command: kong migrations bootstrap
+    environment:
+      <<: *kong-env
+
+  kg:
+    image: kong
+    ports:
+      - 8000:8000
+      - 8443:8443
+      - 8001:8001
+      - 8002:8002
+      - 8444:8444
+    environment:
+      <<: *kong-env
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_GUI_LISTEN: 0.0.0.0:8002
