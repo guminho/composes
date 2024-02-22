@@ -22,14 +22,8 @@ services:
       PGADMIN_DEFAULT_PASSWORD: guest
 
   rd:
-    image: redis
-    ports:
-      - 6379:6379
-
-  rdi:
-    image: redislabs/redisinsight
-    ports:
-      - 8001:8001
+    image: redis/redis-stack
+    network_mode: host # port 6379,8001
 
   mg:
     image: mongo
