@@ -9,8 +9,7 @@ x-kong-env: &kong-env
 services:
   pg:
     image: postgres:14
-    ports:
-      - 5432:5432
+    network_mode: host # port 5432
     environment:
       POSTGRES_PASSWORD: guest
 
@@ -34,32 +33,23 @@ services:
 
   mg:
     image: mongo
-    ports:
-      - 27017:27017
+    network_mode: host # port 27017
 
   rmq:
     image: rabbitmq:3-management
-    ports:
-      - 5672:5672
-      - 15672:15672 # ui
+    network_mode: host # port 5672,15672
 
   mio:
     image: minio/minio
     command: server /data --console-address :9001
-    ports:
-      - 9000:9000
-      - 9001:9001 # ui
+    network_mode: host # port 9000,9001
     environment:
       MINIO_ROOT_USER: guest
       MINIO_ROOT_PASSWORD: guest123
 
   jg:
     image: jaegertracing/all-in-one
-    ports:
-      - 16686:16686 # query ui
-      - 6831:6831/udp # agent jaeger thrift
-      - 14250:14250 # collector jaeger grpc
-      - 4317:4317 # collector otlp grpc
+    network_mode: host # port 6831,14250,4317,16686
 
   kg-migrate:
     image: kong
