@@ -35,6 +35,12 @@ services:
       MINIO_ROOT_USER: guest
       MINIO_ROOT_PASSWORD: guest123
 
+  neo4j:
+    image: neo4j
+    network_mode: host # port 7474, 7687
+    environment:
+      - NEO4J_AUTH=none
+
   jaeger:
     image: jaegertracing/all-in-one
     network_mode: host # port 6831,14250,4317,16686
