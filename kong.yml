@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  kong-db:
+    image: postgres:14
+    network_mode: host # port 5432
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kongpass
+
+  kong-migrate:
+    image: kong
+    depends_on: [kong-db]
+    command: kong migrations bootstrap
+    network_mode: host
+    environment:
+      KONG_PG_HOST: localhost
+      KONG_PG_PASSWORD: kongpass
+
+  kong:
+    image: kong
+    depends_on: [kong-db]
+    network_mode: host # port proxy:8000, admin:8001, gui:8002
+    environment:
+      KONG_PG_HOST: localhost
+      KONG_PG_PASSWORD: kongpass

@@ -1,22 +1,15 @@
-version: '3.8'
-
-x-kong-env: &kong-env
-  KONG_PG_DATABASE: postgres
-  KONG_PG_HOST: pg
-  KONG_PG_USER: postgres
-  KONG_PG_PASSWORD: guest
+version: "3.8"
 
 services:
   pg:
     image: postgres:14
     network_mode: host # port 5432
     environment:
-      POSTGRES_PASSWORD: guest
+      POSTGRES_PASSWORD: guest # user postgres
 
   pga:
     image: dpage/pgadmin4
-    ports:
-      - 5433:80
+    network_mode: host # port 80
     environment:
       PGADMIN_DEFAULT_EMAIL: g@g.gg
       PGADMIN_DEFAULT_PASSWORD: guest
@@ -32,6 +25,7 @@ services:
   rmq:
     image: rabbitmq:3-management
     network_mode: host # port 5672,15672
+    # user guest:guest
 
   minio:
     image: minio/minio
@@ -45,6 +39,10 @@ services:
     image: jaegertracing/all-in-one
     network_mode: host # port 6831,14250,4317,16686
 
+  prom:
+    image: prom/prometheus
+    network_mode: host # port 9090
+
   kafka:
     image: docker.io/bitnami/kafka:3.7
     network_mode: host # port 9092
@@ -57,23 +55,3 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-
-  kg-migrate:
-    image: kong
-    depends_on: [ pg ]
-    command: kong migrations bootstrap
-    environment:
-      <<: *kong-env
-
-  kg:
-    image: kong
-    ports:
-      - 8000:8000
-      - 8443:8443
-      - 8001:8001
-      - 8002:8002
-      - 8444:8444
-    environment:
-      <<: *kong-env
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001
-      KONG_ADMIN_GUI_LISTEN: 0.0.0.0:8002
