@@ -47,7 +47,11 @@ services:
 
   prom:
     image: prom/prometheus
+    command:
+      - --enable-feature=otlp-write-receiver
     network_mode: host # port 9090
+    volumes:
+      - ./prom/prom.yml:/prometheus/prometheus.yml
 
   kafka:
     image: docker.io/bitnami/kafka:3.7
