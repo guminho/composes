@@ -21,6 +21,9 @@ services:
   mongo:
     image: mongo
     network_mode: host # port 27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: guest
+      MONGO_INITDB_ROOT_PASSWORD: guest
 
   rmq:
     image: rabbitmq:3-management
