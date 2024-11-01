@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: kongpass
 
   kong-migrate:
-    image: kong
+    image: kong/kong-gateway:3.8
     depends_on: [kong-db]
     command: kong migrations bootstrap
     network_mode: host
@@ -18,9 +18,19 @@ services:
       KONG_PG_PASSWORD: kongpass
 
   kong:
-    image: kong
-    depends_on: [kong-db]
+    image: kong/kong-gateway:3.8
+    depends_on: 
+      kong-migrate:
+        condition: service_completed_successfully
     network_mode: host # port proxy:8000, admin:8001, gui:8002
     environment:
       KONG_PG_HOST: localhost
       KONG_PG_PASSWORD: kongpass
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_STATUS_ACCESS_LOG: /dev/stdout
+      KONG_STATUS_ERROR_LOG: /dev/stderr
+      KONG_TRACING_INSTRUMENTATIONS: all
+      KONG_TRACING_SAMPLING_RATE: 1.0
