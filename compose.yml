@@ -5,9 +5,9 @@ services:
     network_mode: host # port 5432
     environment:
       POSTGRES_PASSWORD: changeme # user: postgres
-    #   PGDATA: /var/lib/postgresql/data/pgdata
-    # volumes:
-    #   - pgvolume:/var/lib/postgresql/data
+  #   PGDATA: /var/lib/postgresql/data/pgdata
+  # volumes:
+  #   - pgvolume:/var/lib/postgresql/data
 
   pgvec:
     image: agnohq/pgvector:16
@@ -24,6 +24,14 @@ services:
     image: redis/redis-stack
     network_mode: host # port 6379,8001
 
+  ri:
+    image: redis/redisinsight
+    network_mode: host # port 5540
+
+  valkey:
+    image: valkey/valkey:8
+    network_mode: host # port 6379
+
   mongo:
     image: mongo
     network_mode: host # port 27017
@@ -34,7 +42,7 @@ services:
   rmq:
     image: rabbitmq:3-management
     network_mode: host # port 5672,15672
-    # user guest:guest
+  # user guest:guest
 
   minio:
     image: minio/minio
@@ -43,6 +51,21 @@ services:
     environment:
       MINIO_ROOT_USER: demo
       MINIO_ROOT_PASSWORD: changeme
+
+  es:
+    image: elasticsearch:8.12.1
+    network_mode: host # port 9200,9300
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
 
   neo4j:
     image: neo4j
@@ -82,6 +105,12 @@ services:
       KEYCLOAK_ADMIN: demo
       KEYCLOAK_ADMIN_PASSWORD: changeme
     command: start-dev
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    network_mode: host # port 5678
+    environment:
+      N8N_SECURE_COOKIE: 'false'
 
 volumes:
   pgvolume:
