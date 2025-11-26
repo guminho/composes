@@ -5,9 +5,9 @@ services:
     network_mode: host # port 5432
     environment:
       POSTGRES_PASSWORD: changeme # user: postgres
-    #   PGDATA: /var/lib/postgresql/data/pgdata
-    # volumes:
-    #   - pgvolume:/var/lib/postgresql/data
+  #   PGDATA: /var/lib/postgresql/data/pgdata
+  # volumes:
+  #   - pgvolume:/var/lib/postgresql/data
 
   pgvec:
     image: agnohq/pgvector:16
@@ -34,7 +34,7 @@ services:
   rmq:
     image: rabbitmq:3-management
     network_mode: host # port 5672,15672
-    # user guest:guest
+  # user guest:guest
 
   minio:
     image: minio/minio
@@ -82,6 +82,12 @@ services:
       KEYCLOAK_ADMIN: demo
       KEYCLOAK_ADMIN_PASSWORD: changeme
     command: start-dev
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    network_mode: host # port 5678
+    environment:
+      N8N_SECURE_COOKIE: 'false'
 
 volumes:
   pgvolume:
