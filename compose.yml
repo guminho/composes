@@ -20,6 +20,13 @@ services:
     volumes:
       - pgvolume:/var/lib/postgresql/data
 
+  mysql:
+    image: mysql
+    network_mode: host # port 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme # user 'root'
+    # volumes: [mysql_data:/var/lib/mysql]
+
   redis:
     image: redis/redis-stack
     network_mode: host # port 6379,8001
@@ -114,3 +121,4 @@ services:
 
 volumes:
   pgvolume:
+  mysql_data:
