@@ -1,7 +1,7 @@
 services:
   pg:
     ## cli: pgadmin4
-    image: postgres:17
+    image: postgres:16
     network_mode: host # port 5432
     environment:
       POSTGRES_PASSWORD: CHANGE_ME # user: postgres
@@ -112,6 +112,17 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
 
+  nats:
+    image: nats
+    container_name: nats-server
+    ports:
+      - "4222:4222"   # Client connections
+      - "8222:8222"   # HTTP Monitoring
+    command: ["-js", "-sd", "/data"]
+    volumes:
+      - nats_data:/data
+    # js: jetstream, sd: store directory
+
   keycloak:
     image: quay.io/keycloak/keycloak
     network_mode: host # port 8080
@@ -129,3 +140,4 @@ services:
 volumes:
   pgvolume:
   mysql_data:
+  nats_data:
