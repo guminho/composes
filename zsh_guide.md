@@ -4,6 +4,28 @@ A high-performance, minimal shell configuration using Antidote for plugin manage
 
 ---
 
+## 🎯 Design Choices & Context
+
+### Core Needs & Goals
+* **High Performance**: Sub-20ms shell startup time.
+* **Minimalism**: Clean `~/.zshrc` containing only the essentials (setup once and forget).
+* **Two-Line Prompt**: Path on top, input on bottom to avoid line truncation in deep directories.
+* **No Clutter**: No auto-polluting aliases or background processes that clobber standard Bash tools.
+
+### Why Other Options Were Rejected
+* **Oh-My-Zsh / Prezto**: Too heavy and slow, introducing too many default aliases.
+* **Zinit / Zplug**: Overly complex configuration syntax, prone to breaking on updates.
+* **Zap / Zcomet**: Inline plugin declarations clutter the main `~/.zshrc`.
+* **Zimfw**: Very fast, but invasive; overrides native shell behaviors and defaults.
+* **Pure Theme**: Sleek, but customizing it for full paths requires verbose configuration.
+
+### The Selected Stack
+1. **Antidote (Plugin Manager)**: Parses a simple `~/.zsh_plugins.txt` and compiles it into a static script. It is extremely fast (< 15ms) and runs zero background processes after startup.
+2. **Zephyr (Micro-framework)**: Provides modular foundation components (history, editor, directory utilities) and initializes Zsh completions cleanly using built-in caching.
+3. **Starship (Prompt)**: A fast, Rust-based prompt. By default, it uses a two-line layout and intelligently displays language/tool environments (Git, Kubernetes, AWS, UV, etc.) only when inside a relevant directory.
+
+---
+
 ## 🛠️ Prerequisites
 
 Ensure these are installed before loading your shell configuration:
@@ -62,12 +84,26 @@ eval "$(starship init zsh)"
 
 ---
 
-## ⚡ 3. Optimize UV Completions (Zero Startup Cost)
+## ⚡ 3. Optimize Tool Completions (Zero Startup Cost)
 
-Instead of using `eval` on every startup, generate the completions statically:
+Instead of using dynamic `eval` or generating completions on every shell startup, dump them statically to the user completions directory. Zephyr's completion plugin will scan this directory and lazy-load them on-demand.
 
+First, ensure the directory exists:
 ```bash
 mkdir -p ~/.config/zsh/completions
-uv generate-shell-completion zsh > ~/.config/zsh/completions/_uv
 ```
-Zephyr's completion plugin automatically scans `~/.config/zsh/completions` and loads `_uv` on-demand when you press `Tab`.
+
+Then generate the static files:
+
+*   **uv**:
+    ```bash
+    uv generate-shell-completion zsh > ~/.config/zsh/completions/_uv
+    ```
+*   **docker**:
+    ```bash
+    docker completion zsh > ~/.config/zsh/completions/_docker
+    ```
+*   **kubectl**:
+    ```bash
+    kubectl completion zsh > ~/.config/zsh/completions/_kubectl
+    ```
